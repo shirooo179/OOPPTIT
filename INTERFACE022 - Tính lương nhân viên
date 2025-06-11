@@ -1,0 +1,117 @@
+import java.util.*;
+
+interface Identifiable{
+    public String getId();
+}
+
+interface Payable{
+    public double calculateMonthlyPay();
+}
+
+class FullTime implements Identifiable, Payable{
+    String name;
+    String id;
+    double monthlySalary;
+
+    public FullTime(String name, String id, double monthlySalary){
+        this.name = name;
+        this.id = id;
+        this.monthlySalary = monthlySalary;
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    @Override
+    public String getId(){
+        return id;
+    }
+
+    public double getMonthlySalary(){
+        return monthlySalary;
+    }
+
+    @Override
+    public double calculateMonthlyPay(){
+        return monthlySalary;
+    }
+}
+
+class PartTime implements Identifiable, Payable{
+    String name;
+    String id;
+    double hourlyRate;
+    int hoursWorked;
+
+    public PartTime(String name, String id, double hourlyRate, int hoursWorked){
+        this.name = name;
+        this.id = id;
+        this.hourlyRate = hourlyRate;
+        this.hoursWorked = hoursWorked;
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    @Override
+    public String getId(){
+        return id;
+    }
+
+    public double getHourlyRate(){
+        return hourlyRate;
+    }
+
+    public int getHoursWorked(){
+        return hoursWorked;
+    }
+
+    @Override
+    public double calculateMonthlyPay(){
+        return hourlyRate * hoursWorked;
+    }
+}
+
+class Main{
+    public static void main(String[] args){
+        Scanner sc = new Scanner(System.in);
+
+        int t = sc.nextInt();
+        sc.nextLine();
+
+        List<Payable> employees = new ArrayList<>();
+        
+        while(sc.hasNextLine()){
+            String line = sc.nextLine();
+            if(line.equals("Calculate")) {
+                break;
+            }
+
+            if(line.startsWith("FullTime")){
+                String[] parts = line.split("\"");
+                String name = parts[1];
+                String[] rest = parts[2].trim().split(" ");
+                String id = rest[0];
+                double salary = Double.parseDouble(rest[1]);
+                employees.add(new FullTime(name, id, salary));
+            } else if(line.startsWith("PartTime")){
+                String[] parts = line.split("\"");
+                String name = parts[1];
+                String[] rest = parts[2].trim().split(" ");
+                String id = rest[0];
+                double rate = Double.parseDouble(rest[1]);
+                int hours = Integer.parseInt(rest[2]);
+                employees.add(new PartTime(name, id, rate, hours));
+            }
+        }
+        
+        double total = 0.0;
+        for(Payable e : employees) {
+            total += e.calculateMonthlyPay();
+        }
+        
+        System.out.printf("Total Monthly Payroll: %.2f\n", total);
+    }
+}
