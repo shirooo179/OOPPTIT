@@ -1,0 +1,87 @@
+import java.util.*;
+
+interface Identifiable{
+    public String getId();
+}
+
+class Human implements Identifiable{
+    String name;
+    int age;
+    String id;
+
+    public Human(String name, int age, String id){
+        this.name = name;
+        this.age = age;
+        this.id = id;
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    public int getAge(){
+        return age;
+    }
+
+    @Override
+    public String getId(){
+        return id;
+    }
+}
+
+class Robot implements Identifiable{
+    String model;
+    String id;
+
+    public Robot(String model, String id){
+        this.model = model;
+        this.id = id;
+    }
+
+    public String getModel(){
+        return model;
+    }
+
+    @Override
+    public String getId(){
+        return id;
+    }
+}
+
+class Main{
+    public static void main(String[] args){
+        Scanner sc = new Scanner(System.in);
+
+        int t = sc.nextInt();
+        sc.nextLine();
+
+        List<Identifiable> Identify = new ArrayList<>();
+
+        while(sc.hasNextLine()){
+            String line = sc.nextLine();
+            if(line.equals("End")){
+                break;
+            }
+
+            String[] tokens = line.split(" ");
+            if(tokens[0].equals("Human")){
+                String name = tokens[1];
+                int age = Integer.parseInt(tokens[2]);
+                String id = tokens[3];
+                Identify.add(new Human(name, age, id));
+            } else if(tokens[0].equals("Robot")){
+                String model = tokens[1];
+                String id = tokens[2];
+                Identify.add(new Robot(model, id));
+            }
+        }
+
+        String checkSuffix = sc.nextLine();
+
+        for(Identifiable entity : Identify){
+            if(entity.getId().endsWith(checkSuffix)){
+                System.out.println(entity.getId());
+            }
+        }
+    }
+}
