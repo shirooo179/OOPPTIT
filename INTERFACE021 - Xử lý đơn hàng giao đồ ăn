@@ -1,0 +1,74 @@
+import java.util.*;
+
+interface PricedItem{
+    public double getPrice();
+}
+
+interface SourceableItem{
+    public String getSourceName();
+}
+
+class Dish implements PricedItem, SourceableItem{
+    String name;
+    double price;
+    String restaurantName;
+
+    public Dish(String name, double price, String restaurantName){
+        this.name = name;
+        this.price = price;
+        this.restaurantName = restaurantName;
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    @Override
+    public double getPrice(){
+        return price;
+    }
+
+    public String getRestaurantName(){
+        return restaurantName;
+    }
+
+    @Override
+    public String getSourceName(){
+        return restaurantName;
+    }
+
+}
+
+class Main{
+    public static void main(String[] args){
+        Scanner sc = new Scanner(System.in);
+
+        int t = sc.nextInt();
+        sc.nextLine();
+
+        String n = "";
+        List<Dish> dishes = new ArrayList<>();
+
+        while(sc.hasNextLine()){
+            String line = sc.nextLine();
+            if(line.equals("Checkout")){
+                n = sc.nextLine().replace("\"", "").trim();
+                break;
+            }
+
+            String[] parts = line.split("\"");
+            String name = parts[1];
+            double price = Double.parseDouble(parts[2].trim());
+            String restaurantName = parts[3];
+
+            dishes.add(new Dish(name, price, restaurantName));
+
+        }
+
+        for(Dish dish : dishes){
+            if(dish.getSourceName().equals(n)){
+                System.out.printf("\"%s\" - %.2f\n", dish.getName(), dish.getPrice());
+            }
+        }
+    }
+}
