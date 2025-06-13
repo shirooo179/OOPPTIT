@@ -1,0 +1,167 @@
+import java.util.*;
+
+abstract class Asset{
+    String name;
+    double value;
+    Date acquisitionDate;
+
+    public Asset(String name, double value, Date acquisitionDate){
+        this.name = name;
+        this.value = value;
+        this.acquisitionDate = acquisitionDate;
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    public void setName(String name){
+        this.name = name;
+    }
+
+    public double getValue(){
+        return value;
+    }
+
+    public void setValue(double value){
+        this.value = value;
+    }
+
+    public Date getAcquisitionDate(){
+        return acquisitionDate;
+    }
+
+    public void setAcquisitionDate(Date acquisitionDate){
+        this.acquisitionDate = acquisitionDate;
+    }
+
+    public abstract double getDepreciation();
+}
+
+class FixedAsset extends Asset{
+    int usefulLife;
+
+    public FixedAsset(String name, double value, Date acquisitionDate, int usefulLife){
+        super(name, value, acquisitionDate);
+        this.usefulLife = usefulLife;
+    }
+
+    public int getUsefulLife(){
+        return usefulLife;
+    }
+
+    @Override
+    public double getDepreciation() {
+        return value / usefulLife;
+    }
+}
+
+class CurrentAsset extends Asset{
+    double liquidationValue;
+
+    public CurrentAsset(String name, double value, Date acquisitionDate, double liquidationValue){
+        super(name, value, acquisitionDate);
+        this.liquidationValue = liquidationValue;
+    }
+
+    public double getLiquidationValue() {
+        return liquidationValue;
+    }
+
+    @Override
+    public double getDepreciation() {
+        return value * 0.1;
+    }
+}
+
+class IntangibleAsset extends Asset{
+    int amortizationPeriod;
+
+    public IntangibleAsset(String name, double value, Date acquisitionDate, int amortizationPeriod){
+        super(name, value, acquisitionDate);
+        this.amortizationPeriod = amortizationPeriod;
+    }
+
+    public int getAmortizationPeriod(){
+        return amortizationPeriod;
+    }
+
+    @Override
+    public double getDepreciation() {
+        return value / amortizationPeriod;
+    }
+}
+
+class AssetManager{
+    List<Asset> assets;
+
+    public AssetManager(){
+        assets = new ArrayList<>();
+    }
+
+    public void addAsset(Asset asset){
+        assets.add(asset);
+    }
+
+    public double getTotalValue(){
+        double total = 0.0;
+        for(Asset a : assets){
+            total += a.getValue();
+        }
+        return total;
+    }
+
+    public double getTotalDepreciation(){
+        double total = 0.0;
+        for(Asset a : assets){
+            total += a.getDepreciation();
+        }
+        return total;
+    }
+
+    public List<Asset> getAssets(){
+        return assets;
+    }
+}
+
+class Main{
+    public static void main(String[] args){
+        Scanner sc = new Scanner(System.in);
+
+        int t = sc.nextInt();
+        sc.nextLine();
+        AssetManager manager = new AssetManager();
+        Date acquisitionDate = new Date();
+
+        while(t-- > 0){
+            String[] parts = sc.nextLine().split(" ");
+            String type = parts[0];
+            String name = parts[1];
+            double value = Double.parseDouble(parts[2]);
+
+            switch (type) {
+                case "FixedAsset" :
+                    int usefulLife = Integer.parseInt(parts[3]);
+                    manager.addAsset(new FixedAsset(name, value, acquisitionDate, usefulLife));
+                    break;
+                case "CurrentAsset" :
+                    double liquidationValue = Double.parseDouble(parts[3]);
+                    manager.addAsset(new CurrentAsset(name, value, acquisitionDate, liquidationValue));
+                    break;
+                case "IntangibleAsset" :
+                    int amortizationPeriod = Integer.parseInt(parts[3]);
+                    manager.addAsset(new IntangibleAsset(name, value, acquisitionDate, amortizationPeriod));
+                    break;
+            }
+        }
+        for(Asset asset : manager.getAssets()){
+            System.out.println("Asset Name: " + asset.getName());
+            System.out.printf("Asset Value: %.1f\n", asset.getValue());
+            System.out.printf("Depreciation: %.1f\n", asset.getDepreciation());
+            System.out.println("---------------------------");
+        }
+
+        System.out.printf("Total Value of Assets: %.1f\n", manager.getTotalValue());
+        System.out.printf("Total Depreciation of Assets: %.1f\n", manager.getTotalDepreciation());
+    }
+}
