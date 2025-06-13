@@ -1,0 +1,140 @@
+import java.util.*;
+
+class Item{
+    String product;
+    int quantity;
+    int unitPrice;
+    int originalQuantity;
+
+    public Item(String product, int quantity, int unitPrice){
+        this.product = product;
+        this.quantity = quantity;
+        this.unitPrice = unitPrice;
+        this.originalQuantity = quantity;
+    }
+
+    public Item(String product, int quantity){
+        this.product = product;
+        this.quantity = quantity;
+    }
+
+    public String getProduct(){
+        return product;
+    }
+
+    public int getQuantity(){
+        return quantity;
+    }
+
+    public int getUnitPrice(){
+        return unitPrice;
+    }
+
+    public int getOriginalQuantity(){
+        return originalQuantity;
+    }
+
+    public void setQuantity(int quantity){
+        this.quantity = quantity;
+    }
+
+    public int getTotalPrice(){
+        return quantity * unitPrice;
+    }
+
+    public void printIteminfo(){
+        System.out.println("Product: " + product + " has quantity " + quantity + " with price: " + getTotalPrice());
+    }
+}
+
+class Warehouse{
+    HashMap<String, Item> items;
+
+    public Warehouse(){
+        this.items = new HashMap<>();
+    }
+
+    public void importProduct(Item item){
+        String productname = item.getProduct();
+        if(items.containsKey(productname)){
+            Item existing = items.get(productname);
+            existing.setQuantity(existing.getQuantity() + item.getQuantity());
+        } else {
+            items.put(productname, item);
+        }
+    }
+
+    public Item getItem(String name){
+        return items.get(name);
+    }
+
+    public void removeProduct(String name, int amount){
+        Item item = items.get(name);
+        if(item != null){
+            int newquantity = Math.max(0, item.getQuantity() - amount);
+            item.setQuantity(newquantity);
+        }
+    }
+
+    public void decreaseQuantityInWarehouseByOne(){
+        for(Item item : items.values()){
+            if(item.getQuantity() > 0){
+                item.setQuantity(item.getQuantity() - 1);
+            }
+        }
+    }
+
+    public void takeFromItemToWareHouse(List<Item> itemstoCheck, String product, int quantity){
+        for(Item itemtocheck : itemstoCheck){
+            if(itemtocheck.getProduct().equals(product)){
+                int canAdd = Math.min(quantity, itemtocheck.getQuantity());
+                itemtocheck.setQuantity(itemtocheck.getQuantity() - canAdd);
+                Item warehouseitem = items.get(product);
+                if(warehouseitem != null){
+                    warehouseitem.setQuantity(warehouseitem.getQuantity() + canAdd);
+                } else {
+                    items.put(product, new Item(product, canAdd, 0));
+                }
+            }
+        }
+    }
+
+    public void printWarehousseInfo(){
+        for(Item item : items.values()){
+            item.printIteminfo();
+        }
+    }
+}
+
+class Main{
+    public static void main(String[] args){
+        Item milk = new Item("milk", 4, 2);
+        Item buttermilk = new Item("buttermilk", 10, 2);
+        milk.printIteminfo();
+        buttermilk.printIteminfo();
+
+        Warehouse warehouse = new Warehouse();
+        warehouse.importProduct(milk);
+        warehouse.importProduct(buttermilk);
+
+        warehouse.removeProduct("milk", 1);
+        warehouse.removeProduct("buttermilk", 3);
+        warehouse.getItem("milk").printIteminfo();
+        warehouse.getItem("buttermilk").printIteminfo();
+
+        warehouse.decreaseQuantityInWarehouseByOne();
+        warehouse.getItem("milk").printIteminfo();
+        warehouse.getItem("buttermilk").printIteminfo();
+
+        List<Item> itemsToCheck = new ArrayList<>();
+        itemsToCheck.add(new Item("milk", 2));
+        itemsToCheck.add(new Item("buttermilk", 6));
+
+        warehouse.takeFromItemToWareHouse(itemsToCheck, "milk", 5);
+        warehouse.takeFromItemToWareHouse(itemsToCheck, "buttermilk", 1);
+
+        warehouse.getItem("milk").printIteminfo();
+        warehouse.getItem("buttermilk").printIteminfo();
+
+    }
+}
